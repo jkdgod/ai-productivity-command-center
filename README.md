@@ -1,99 +1,49 @@
 # AI Productivity Command Center
 
-A public-safe, local-first command center that turns goals, tasks, and notes into clear daily execution plans. Supports OpenAI (ChatGPT), Anthropic (Claude), Google (Gemini), and deterministic local mode.
+A public, local-first productivity suite for command line, web, desktop, and mobile. It turns goals, tasks, and notes into reviewable daily execution plans while keeping ChatGPT, Claude, and Gemini integrations optional and user-controlled.
 
-## Platforms
+## Use it anywhere
 
-- Command line: Python CLI for automation and fast planning.
-- Desktop: architecture roadmap for a local-first Tauri + React dashboard.
-- Mobile: architecture roadmap for an Expo / React Native companion app.
-- Web: architecture roadmap for an optional browser dashboard.
+| Experience | Status | Location |
+|---|---|---|
+| Python command line | Runnable | `app/` |
+| React web dashboard | Runnable starter | `apps/web/` |
+| Expo phone app | Runnable starter | `apps/mobile/` |
+| Tauri desktop app | Native build scaffold | `apps/desktop/` |
 
-## Safe public use
-
-This public repository includes synthetic examples only. Never commit credentials, passwords, employer-confidential data, controlled information, personal data, or private calendars. Use `.env` for API keys and begin with local mode for offline planning.
-
-## Quick start
+## Quick start: CLI
 
 ```bash
-git clone https://github.com/jkdgod/ai-productivity-command-center.git
-cd ai-productivity-command-center
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python -m app plan-day --input data/sample_tasks.json --provider local
 ```
 
-## Providers
+## Quick start: web
 
 ```bash
-# Optional integrations. Install only the SDK you want.
-pip install openai      # Set OPENAI_API_KEY in .env
-pip install anthropic   # Set ANTHROPIC_API_KEY in .env
-pip install google-genai # Set GEMINI_API_KEY in .env
-
-python -m app plan-day --input data/sample_tasks.json --provider openai
-python -m app plan-day --input data/sample_tasks.json --provider anthropic
-python -m app plan-day --input data/sample_tasks.json --provider gemini
+cd apps/web
+npm install
+npm run dev
 ```
 
-## Commands
+## Quick start: mobile
 
-| Command | Purpose |
-|---|---|
-| `plan-day` | Rank tasks and create time blocks |
-| `analyze-notes` | Extract actions, follow-ups, and risks from notes |
-| `weekly-review` | Create a short weekly reflection and focus list |
-
-Add `--output plan.json` to save JSON output.
-
-## Shared response contract
-
-```json
-{
-  "top_priorities": [],
-  "time_blocks": [],
-  "quick_wins": [],
-  "risks_and_blockers": [],
-  "delegation_or_deferral": [],
-  "next_actions": []
-}
+```bash
+cd apps/mobile
+npm install
+npx expo start
 ```
 
-## Architecture
+See [the cross-platform build guide](docs/CROSS_PLATFORM_BUILD.md) for desktop setup and responsible provider integration.
 
-```text
-Input from CLI, desktop, mobile, or web
-              |
-              v
-      Shared validated task schema
-              |
-              v
-    Local priority and planning engine
-              |
-              +--> Local, offline deterministic plan
-              +--> OpenAI / ChatGPT adapter
-              +--> Anthropic / Claude adapter
-              +--> Google / Gemini adapter
-              |
-              v
-     Reviewable structured execution plan
-```
+## Privacy-first design
 
-## Roadmap
-
-- [x] Local CLI planner, samples, tests, and security guidance
-- [x] Optional provider adapter foundation
-- [ ] Shared SQLite workspace and CSV import/export
-- [ ] Desktop app: Tauri + React with protected local storage
-- [ ] Mobile app: Expo / React Native for fast capture and Today view
-- [ ] Web dashboard and provider comparison view
-- [ ] Optional opt-in calendar sync and reminders
-
-## Contributing
-
-Everyone is welcome to use and improve the project. Keep examples synthetic, preserve local-first behavior, do not submit secrets, and include tests for behavior changes.
+- Local mode works without an API key and makes no AI network calls.
+- ChatGPT, Claude, and Gemini are optional integrations using user-owned credentials.
+- The public repository contains synthetic data only.
+- Never commit keys, passwords, personal data, employer-confidential material, controlled information, or private calendar content.
+- Users must review and approve AI output before it changes a calendar, sends a message, or performs another external action.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. Anyone may use, study, modify, and distribute this project under the license terms.

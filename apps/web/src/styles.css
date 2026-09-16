@@ -1,0 +1,32 @@
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #eaf1ff; background: #07111f; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+.shell { max-width: 1120px; margin: 0 auto; padding: 48px 22px 56px; }
+header { margin-bottom: 28px; }
+.eyebrow { color: #7dd3fc; font-size: .75rem; font-weight: 800; letter-spacing: .12em; }
+h1 { font-size: clamp(2rem, 5vw, 4rem); margin: 8px 0; line-height: 1; }
+h2 { margin-top: 0; font-size: 1.15rem; }
+.subtitle, .hint, footer { color: #aabbd1; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+.panel { background: linear-gradient(135deg, #10223c, #0b1729); border: 1px solid #25446d; border-radius: 16px; padding: 20px; box-shadow: 0 14px 36px #0005; }
+.hero { grid-column: span 2; }
+label { display: block; margin-bottom: 8px; color: #c8d7ec; }
+.capture { display: flex; gap: 8px; }
+input { background: #07111f; color: #fff; border: 1px solid #3d5b83; border-radius: 10px; padding: 12px; width: 100%; }
+button { border: 0; border-radius: 10px; background: #38bdf8; color: #03101c; font-weight: 800; padding: 10px 14px; }
+.priority, .tasks li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #25446d; }
+.priority:last-child, .tasks li:last-child { border-bottom: 0; }
+.rank { background: #38bdf8; color: #06111d; border-radius: 99px; min-width: 28px; text-align: center; padding: 5px; font-weight: 900; }
+.priority p, .tasks span { display: block; margin: 3px 0 0; color: #aabbd1; font-size: .85rem; }
+.score { margin-left: auto; font-weight: 800; color: #7dd3fc; }
+.tasks { list-style: none; padding: 0; margin: 0; }
+.tasks li > div { flex: 1; }
+.tasks button { padding: 6px 10px; background: #23446b; color: #eaf1ff; }
+.blocks { display: flex; flex-wrap: wrap; gap: 12px; }
+.block { border-left: 4px solid #38bdf8; padding: 8px 12px; background: #07111f; border-radius: 0 10px 10px 0; min-width: 180px; }
+.block strong, .block span { display: block; }
+.block span { color: #c8d7ec; margin-top: 4px; }
+footer { margin-top: 20px; font-size: .9rem; }
+@media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .hero { grid-column: auto; } .shell { padding-top: 28px; } }

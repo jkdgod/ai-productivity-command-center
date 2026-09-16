@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "AI Productivity Command Center",
+    "slug": "ai-productivity-command-center",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "scheme": "apcc",
+    "plugins": ["expo-router"],
+    "experiments": { "typedRoutes": true }
+  }
+}
