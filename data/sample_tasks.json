@@ -1,0 +1,8 @@
+{
+  "tasks": [
+    {"title": "Finish project proposal", "category": "education", "due_date": "2026-09-18", "impact": 5, "urgency": 5, "effort_hours": 2, "alignment": 5, "notes": "Create a concise one-page draft."},
+    {"title": "Tailor resume for target role", "category": "career", "due_date": "2026-09-19", "impact": 5, "urgency": 4, "effort_hours": 1.5, "alignment": 5, "notes": "Use public-safe technical language."},
+    {"title": "Schedule grocery pickup", "category": "family", "due_date": "2026-09-16", "impact": 3, "urgency": 4, "effort_hours": 0.25, "alignment": 4, "notes": "Confirm meal staples."},
+    {"title": "Outline short-form video", "category": "creative", "due_date": null, "impact": 3, "urgency": 2, "effort_hours": 0.75, "alignment": 3, "notes": "Draft hook and three useful points."}
+  ]
+}
