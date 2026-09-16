@@ -1,0 +1,35 @@
+name: Release Checklist
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, for example v1.0.0'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: pytest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: cd apps/web && npm install && npm run build
+      - name: Create release notes
+        run: |
+          printf '# %s\n\nSee CHANGELOG.md for release notes.\n' '${{ inputs.version }}' > RELEASE_NOTES.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: ${{ inputs.version }}
+          body_path: RELEASE_NOTES.md

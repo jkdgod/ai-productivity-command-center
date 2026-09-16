@@ -1,39 +1,52 @@
 # AI Productivity Command Center
 
-A public, local-first productivity suite for command line, web, desktop, and mobile. It creates reviewable daily plans while keeping ChatGPT, Claude, and Gemini integrations optional and user-controlled.
+A public, local-first productivity suite for command line, web, desktop, mobile, and an optional local API. It creates reviewable daily plans while keeping ChatGPT, Claude, Gemini, calendar access, and synchronization optional and user-controlled.
 
-## Current release: AI Workspace v0.3
+## What is available
 
-- Persistent local workspaces, task management, search, filters, JSON backups, and CSV import/export.
-- Consent-first AI workspace in the web app.
-- Local planning runs entirely in the browser and sends no task data to an AI provider.
-- ChatGPT, Claude, and Gemini are supported through the CLI with user-owned local keys.
-- External-provider prompt previews, consent language, and structured-output validation are included.
-- Browser and mobile apps intentionally do not embed API keys.
+| Component | Status | Purpose |
+|---|---|---|
+| Python CLI | Runnable | Local planning, workspaces, backup, and CSV tools |
+| Web app | Runnable and GitHub Pages-ready | Persistent browser workspace and local planning |
+| Mobile app | Runnable starter | On-device task workspace |
+| Desktop app | Native build scaffold | Tauri wrapper for the web workspace |
+| Local API | Runnable optional template | Local planning endpoint for controlled integrations |
 
-## Run it
+## Run locally
 
 ```bash
-# CLI local mode
+# CLI
 pip install -r requirements.txt
 python -m app plan-day --input data/sample_tasks.json --provider local
-
-# Optional CLI provider mode: set only your own key(s) in .env
-pip install openai anthropic google-genai
-python -m app plan-day --input data/sample_tasks.json --provider openai
 
 # Web
 cd apps/web && npm install && npm run dev
 
 # Mobile
 cd apps/mobile && npm install && npx expo start
+
+# Optional local API
+cd services/local-api
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8787
 ```
 
-Read [AI Workspace](docs/AI_WORKSPACE.md) and [Local Workspace](docs/LOCAL_WORKSPACE.md) before configuring providers or importing data.
+## Free public demo
 
-## Privacy-first
+GitHub Pages deployment is configured. A repository owner can enable it in **Settings → Pages → GitHub Actions**. Read [Deployment Guide](docs/DEPLOYMENT.md).
 
-Local mode makes no AI network calls. External provider use requires a user-selected provider, explicit disclosure, user-owned credentials, and review of returned recommendations. Never commit keys, passwords, personal data, employer-confidential material, controlled information, or private calendar content.
+## Privacy and safety
+
+- Local mode does not intentionally send tasks to an AI provider.
+- Browser/mobile applications do not embed provider API keys.
+- External AI, calendar, and synchronization features require user selection, clear disclosure, and explicit consent.
+- Never commit credentials, passwords, personal data, employer-confidential material, controlled information, or private calendar content.
+
+Read [Privacy](docs/PRIVACY.md), [Security](SECURITY.md), [AI Workspace](docs/AI_WORKSPACE.md), and [Calendar Integration](docs/CALENDAR_INTEGRATION.md).
+
+## Project operations
+
+CI, CodeQL scanning, dependency review, GitHub Pages workflow, and a release workflow are included. See [Release Checklist](docs/RELEASE_CHECKLIST.md) and [Changelog](CHANGELOG.md).
 
 ## License
 
