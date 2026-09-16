@@ -1,34 +1,16 @@
-export type Task = {
-  id: string
-  title: string
-  category: string
-  impact: number
-  urgency: number
-  alignment: number
-  effortHours: number
-}
-
-export type Priority = { task: Task; score: number; reason: string }
-
-export type TimeBlock = { task: Task; durationMinutes: number }
-
-export function priorityScore(task: Task): number {
-  const effortBonus = Math.max(0, 6 - Math.min(task.effortHours, 6)) * 2.5
-  return Math.round(((task.urgency * 8) + (task.impact * 7) + (task.alignment * 4) + effortBonus) * 10) / 10
-}
-
-export function priorityReason(task: Task): string {
-  const factors: string[] = []
-  if (task.urgency >= 4) factors.push('high urgency')
-  if (task.impact >= 4) factors.push('high impact')
-  if (task.alignment >= 4) factors.push('strong alignment')
-  if (task.effortHours <= 1) factors.push('a short completion window')
-  return `Prioritized for ${factors.join(', ') || 'balanced importance and effort'}.`
-}
-
-export function createPlan(tasks: Task[]) {
-  const ranked = [...tasks].sort((a, b) => priorityScore(b) - priorityScore(a))
-  const topPriorities: Priority[] = ranked.slice(0, 5).map((task) => ({ task, score: priorityScore(task), reason: priorityReason(task) }))
-  const timeBlocks: TimeBlock[] = topPriorities.map(({ task }) => ({ task, durationMinutes: Math.min(120, Math.max(25, Math.round((task.effortHours * 60) / 5) * 5)) }))
-  return { topPriorities, timeBlocks }
-}
+export type Recurrence = 'none' | 'daily' | 'weekly' | 'monthly'
+export type Task = { id:string; title:string; category:string; impact:number; urgency:number; alignment:number; effortHours:number; dueDate?:string; recurrence:Recurrence; createdAt:string; updatedAt:string; completedAt?:string; notes?:string }
+export type Workspace = { version:1; tasks:Task[]; updatedAt:string }
+export type Priority = { task:Task; score:number; reason:string }; export type TimeBlock = { task:Task; durationMinutes:number }
+const storageKey='apcc.workspace.v1'
+const clamp=(value:number)=>Math.max(1,Math.min(5,Number.isFinite(value)?value:3))
+export function createTask(input: Partial<Task> & Pick<Task,'title'>):Task { const now=new Date().toISOString(); return { id: input.id ?? crypto.randomUUID(), title:input.title.trim(), category:input.category ?? 'Inbox', impact:clamp(input.impact ?? 3), urgency:clamp(input.urgency ?? 3), alignment:clamp(input.alignment ?? 3), effortHours:Math.max(.25,input.effortHours ?? 1), dueDate:input.dueDate, recurrence:input.recurrence ?? 'none', createdAt:input.createdAt ?? now, updatedAt:input.updatedAt ?? now, completedAt:input.completedAt, notes:input.notes } }
+export function priorityScore(task:Task):number { const effortBonus=Math.max(0,6-Math.min(task.effortHours,6))*2.5; const overdue=task.dueDate && task.dueDate < new Date().toISOString().slice(0,10) ? 10 : 0; return Math.round(((task.urgency*8)+(task.impact*7)+(task.alignment*4)+effortBonus+overdue)*10)/10 }
+export function priorityReason(task:Task):string { const factors:string[]=[]; if(task.urgency>=4) factors.push('high urgency'); if(task.impact>=4) factors.push('high impact'); if(task.alignment>=4) factors.push('strong alignment'); if(task.dueDate && task.dueDate < new Date().toISOString().slice(0,10)) factors.push('an overdue deadline'); return `Prioritized for ${factors.join(', ') || 'balanced importance and effort'}.` }
+export function createPlan(tasks:Task[]) { const ranked=[...tasks].sort((a,b)=>priorityScore(b)-priorityScore(a)); const topPriorities:Priority[]=ranked.slice(0,5).map(task=>({task,score:priorityScore(task),reason:priorityReason(task)})); const timeBlocks:TimeBlock[]=topPriorities.map(({task})=>({task,durationMinutes:Math.min(120,Math.max(25,Math.round(task.effortHours*60/5)*5))})); return {topPriorities,timeBlocks} }
+export function loadWorkspace():Workspace|null { try { const raw=localStorage.getItem(storageKey); if(!raw) return null; const value=JSON.parse(raw); if(!Array.isArray(value.tasks)) return null; return {version:1,tasks:value.tasks.map((task:Partial<Task>)=>createTask(task as Task)),updatedAt:value.updatedAt ?? new Date().toISOString()} } catch { return null } }
+export function saveWorkspace(workspace:Workspace) { localStorage.setItem(storageKey,JSON.stringify(workspace)) }
+export function exportJson(tasks:Task[]) { return JSON.stringify({version:1,exportedAt:new Date().toISOString(),tasks},null,2) }
+const quote=(value:unknown)=>`"${String(value ?? '').replaceAll('"','""')}"`
+export function exportCsv(tasks:Task[]) { const headers=['id','title','category','impact','urgency','alignment','effortHours','dueDate','recurrence','createdAt','updatedAt','completedAt','notes']; return [headers.join(','),...tasks.map(task=>headers.map(key=>quote(task[key as keyof Task])).join(','))].join('\n') }
+export function importTasks(source:string,format:'json'|'csv'):Task[] { if(format==='json'){const value=JSON.parse(source);const tasks=Array.isArray(value)?value:value.tasks;if(!Array.isArray(tasks)) throw new Error('JSON must be a task list or an object with a tasks list.');return tasks.map((task:Partial<Task>)=>createTask(task as Task))} const [header,...rows]=source.trim().split(/\r?\n/);const columns=header.split(',').map(item=>item.replace(/^"|"$/g,''));if(!columns.includes('title')) throw new Error('CSV must include a title column.');return rows.filter(Boolean).map(row=>{const values=row.match(/("(?:""|[^"])*"|[^,]*)(?:,|$)/g)?.map(item=>item.replace(/,$/,'').replace(/^"|"$/g,'').replaceAll('""','"')) ?? [];const value=Object.fromEntries(columns.map((column,index)=>[column,values[index] ?? '']));return createTask({id:value.id||undefined,title:value.title,category:value.category||'Inbox',impact:Number(value.impact)||3,urgency:Number(value.urgency)||3,alignment:Number(value.alignment)||3,effortHours:Number(value.effortHours)||1,dueDate:value.dueDate||undefined,recurrence:(value.recurrence as Recurrence)||'none',createdAt:value.createdAt||undefined,updatedAt:value.updatedAt||undefined,completedAt:value.completedAt||undefined,notes:value.notes||undefined})}) }
